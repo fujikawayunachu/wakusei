@@ -1,0 +1,75 @@
+import vpython as vs
+import time
+
+
+M1 =1
+
+
+deg=0
+xzahyo =[]
+yzahyo=[]
+def main():
+    v1=0#縦方向には自由落下
+   
+    # シーンの範囲
+    vs.scene.range = 700
+
+    # 箱のサイズ
+    l, h, w = 2, 2, 2
+
+    # 箱の中心位置
+    x, y, z = 0, 0, 0
+
+    # 箱の定義
+    box = vs.sphere(color=vs.vector(0,255,255),#
+                 pos=vs.vector(-1000,700,0),#
+                 radius=10,#
+#                  axis=vs.vector(l, 0, 0)
+                 )
+    
+
+
+    b=9
+    deg=0
+    vx=30##########横方向にっは等速運動の初速
+    
+    
+    while deg <1000:
+        # 360[deg]になったら初期化
+        
+#         if deg == 360:
+#             deg = 0
+        # フレームレート
+        vs.rate(30)
+        # 軸を動かして回転
+        
+    
+        F = M1 * 0.9#重力
+        
+        dvdt = F / M1 #下方向への加速度
+        
+        v1 = v1 + dvdt #速度に速度の変化量を加えたもの。オイラー法。
+        
+        
+#         box.pos = vs.vector(vs.sin(deg), 0, vs.cos(deg))
+        
+      
+        
+        if box.pos.y < -240 : #地面の座標
+            v1 = -0.8 * v1#地面の反発係数
+        
+        if box.pos.x > 1000:#右の壁の座標
+            vx = -0.9*vx#
+        
+        if  box.pos.x <  -1000: 
+            vx = -0.9* vx#
+       
+        box.pos = vs.vector(box.pos.x+vx,box.pos.y-v1,0)#座標の更新。座標に座標の変化量（速度）をくわえて更新した
+        xzahyo.append(box.pos.x)#軌跡の描画に使うリスト
+        yzahyo.append(box.pos.y)#軌跡の描画に使うリスト
+        # 0.1[degずつ動かす]
+        deg +=2
+        
+
+# if __name__ == '__main__':
+main()
