@@ -1,0 +1,84 @@
+import vpython as vs
+import numpy as np
+import vpython as vs
+import time
+
+xzahyo =[]# 衛星の座標の軌跡をためておくリスト（ｘ座標
+yzahyo=[] #衛星の座標の軌跡をためておくリスト（ｙ座標
+
+xzahyo1 =[] ## 惑星の座標の軌跡をためておくリスト（ｘ座標
+yzahyo1=[]   #### 惑星の座標の軌跡をためておくリスト（ｙ座標
+def main():
+    # シーンの範囲
+    vs.scene.range = 20
+
+    # 箱のサイズ
+    l, h, w = 2, 2, 2
+
+    # 箱の中心位置
+#     x, y, z = 0, 0, 0
+
+    # 箱の定義
+    s1 = vs.sphere(color=vs.vector(255,255,255),# 惑星の色情報　白
+                 pos=vs.vector(0,0,0), #惑星の最初の座標
+                 size=vs.vector(l,h, w),#惑星のサイズ
+#                  axis=vs.vector(l, 0, 0)
+                 )
+    
+    s2 = vs.sphere(color=vs.vector(0,255,0),# 衛星の色情報　緑
+                 pos=vs.vector(0,10,0),# 衛星最初の座標
+                 size=vs.vector(l,h, w),# 衛星最初のサイズ
+#                  axis=vs.vector(l, 0, 0)
+                 )
+    
+
+    
+    v0 = np.array([0.15,0,0])   #衛星の初速度ベクトル
+    v00 = np.array([0,0,0])     # 惑星の初速度ベクトル
+    
+    M1 = 50#惑星の質量
+    M2 =  2 #衛星の質量
+
+    while True:
+       
+        # フレームレート
+        vs.rate(30)
+        #ベクトルｒの計算（惑星の座標　ー　衛星の座標）
+        vecx = s1.pos.x - s2.pos.x       # 
+        vecy = s1.pos.y - s2.pos.y
+        vecz = s1.pos.z - s2.pos.z
+        
+        r  = np.sqrt ( vecx*vecx + vecy* vecy +  vecz * vecz)
+        
+        
+        
+        F = 0.01* np.array([( M1 * M2 * vecx )/(r**3)  ,( M1 * M2 * vecy )/(r**3) ,( M1 * M2 * vecz )/(r**3)]) 
+        
+        ### 万有引力定数は０．０１にしました。めちゃくちゃですが。#
+        # ベクトルＦの計算をしています。
+        
+        dv2dt = F/ (M2) #衛星の加速度ベクトル 
+        
+        dv1dt = F/M1 #惑星の加速度ベクトル
+        
+        v0 = v0 + dv2dt#####衛星の速度ベクトルに加速度ベクトル＊ｄｔを加えて更新    #オイラー法　v =v+dvdt* dt の＊ｄｔは省略
+        v00 = v00 +  dv1dt#####惑星星の速度ベクトルに加速度ベクトル＊ｄｔを加えて更新　
+        
+        
+        
+        s1.pos = vs.vector(s1.pos.x + v00[0],s1.pos.y + v00[1] , s1.pos.z + v00[2] )
+        ####衛星の座標ベクトルに速度ベクトル＊ｄｔを加えて更新    #オイラー法　ｘ =ｘ+　vdt* dt の＊ｄｔは省略
+        s2.pos = vs.vector(s2.pos.x + v0[0],s2.pos.y + v0[1] , s2.pos.z + v0[2] )
+        ####惑星の座標ベクトルに速度ベクトル＊ｄｔを加えて更新    #オイラー法　ｘ =ｘ+　vdt* dt の＊ｄｔは省略
+     
+
+        
+#         print(s1.pos)
+        xzahyo.append(s2.pos.x)
+        yzahyo.append(s2.pos.y)
+        
+        xzahyo1.append(s1.pos.x)
+        yzahyo1.append(s1.pos.y)#座標を記録しているリスト。散布図を描画すれば軌跡がかけます
+
+if __name__ == '__main__':
+    main()
