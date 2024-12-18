@@ -1,0 +1,62 @@
+import vpython as vs
+import time
+
+M1 = 1
+
+deg = 0
+xzahyo = []
+yzahyo = []
+
+def main():
+    v1 = 0  # 縦方向には自由落下
+
+    # シーンの範囲
+    vs.scene.range = 700
+
+    # 箱のサイズ
+    l, h, w = 2, 2, 2
+
+    # 箱の中心位置
+    x, y, z = 0, 0, 0
+
+    # 箱の定義
+    box = vs.sphere(color=vs.vector(0, 255, 255),
+                    pos=vs.vector(-1000, 700, 0),
+                    radius=10)
+
+    # 壁の定義（分厚くして奥行きを追加）
+    left_wall = vs.box(pos=vs.vector(-1000, 0, 0), size=vs.vector(50, 1400, 200), color=vs.color.red)
+    right_wall = vs.box(pos=vs.vector(1000, 0, 0), size=vs.vector(50, 1400, 200), color=vs.color.red)
+
+    # 地面の定義
+    ground = vs.box(pos=vs.vector(0, -240, 0), size=vs.vector(2000, 50, 200), color=vs.color.green)
+
+    b = 9
+    deg = 0
+    vx = 30  # 横方向には等速運動の初速
+
+    while deg < 1000:
+        # フレームレート
+        vs.rate(30)
+
+        F = M1 * 0.9  # 重力
+        dvdt = F / M1  # 下方向への加速度
+        v1 = v1 + dvdt  # 速度に速度の変化量を加えたもの。オイラー法。
+
+        if box.pos.y < -240:  # 地面の座標
+            v1 = -0.8 * v1  # 地面の反発係数
+
+        if box.pos.x > 1000:  # 右の壁の座標
+            vx = -0.9 * vx
+
+        if box.pos.x < -1000:  # 左の壁の座標
+            vx = -0.9 * vx
+
+        box.pos = vs.vector(box.pos.x + vx, box.pos.y - v1, 0)  # 座標の更新。座標に座標の変化量（速度）を加えて更新
+        xzahyo.append(box.pos.x)  # 軌跡の描画に使うリスト
+        yzahyo.append(box.pos.y)  # 軌跡の描画に使うリスト
+
+        deg += 2
+
+if __name__ == '__main__':
+    main()
